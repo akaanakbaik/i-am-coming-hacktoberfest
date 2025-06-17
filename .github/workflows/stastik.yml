@@ -3,11 +3,12 @@ name: Hitung Kontributor
 on:
   push:
     branches: [main]
-  workflow_dispatch: # agar bisa dijalankan manual juga dari tab Actions
+  workflow_dispatch:  # agar bisa dijalankan manual
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -17,16 +18,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Debug Isi File kontributor.md
-        run: |
-          echo "[DEBUG] Isi file kontributor.md:"
-          cat kontributor.md
-
       - name: Hitung Jumlah Kontributor
         id: hitung
         run: |
-          JUMLAH=$(grep -cE "^\s*-\s" kontributor.md)
-          echo "[DEBUG] Jumlah hasil grep: $JUMLAH"
+          JUMLAH=$(grep -c "^- " kontributor.md)
           echo "JUMLAH=$JUMLAH" >> $GITHUB_ENV
 
       - name: Ganti Placeholder di README
@@ -35,6 +30,7 @@ jobs:
 
       - name: Commit dan Push Perubahan
         run: |
+          git pull origin main --rebase
           git add README.md
-          git commit -m "🤖 update statistik kontributor (${{ env.JUMLAH }})" || echo "Tidak ada perubahan"
+          git commit -m "🤖 update statistik kontributor (${{ env.JUMLAH }})" || echo "No changes to commit"
           git push
