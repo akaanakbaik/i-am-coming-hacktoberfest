@@ -3,6 +3,7 @@ name: Hitung Kontributor
 on:
   push:
     branches: [main]
+  workflow_dispatch: # agar bisa dijalankan manual juga dari tab Actions
 
 jobs:
   update-readme:
@@ -16,22 +17,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Debug Isi File kontributor.md
+        run: |
+          echo "[DEBUG] Isi file kontributor.md:"
+          cat kontributor.md
+
       - name: Hitung Jumlah Kontributor
         id: hitung
         run: |
-  JUMLAH=$(grep -cE "^\s*-\s" kontributor.md)
-  echo "JUMLAH=$JUMLAH" >> $GITHUB_ENV
+          JUMLAH=$(grep -cE "^\s*-\s" kontributor.md)
+          echo "[DEBUG] Jumlah hasil grep: $JUMLAH"
+          echo "JUMLAH=$JUMLAH" >> $GITHUB_ENV
 
       - name: Ganti Placeholder di README
         run: |
-          # Ganti angka sebelumnya dengan jumlah terbaru
-          sed -i -E "s/(Jumlah Kontributor: )[0-9]+/\1${{ env.JUMLAH }}/" README.md
-          # Tambahkan update timestamp supaya commit selalu dianggap berubah
-          echo "" >> README.md
-          echo "<!-- Updated at $(date) -->" >> README.md
+          sed -i "s/{{jumlah_kontributor}}/${{ env.JUMLAH }}/g" README.md
 
       - name: Commit dan Push Perubahan
         run: |
           git add README.md
-          git commit -m "🤖 update statistik kontributor (${{ env.JUMLAH }})" || echo "No changes to commit"
+          git commit -m "🤖 update statistik kontributor (${{ env.JUMLAH }})" || echo "Tidak ada perubahan"
           git push
