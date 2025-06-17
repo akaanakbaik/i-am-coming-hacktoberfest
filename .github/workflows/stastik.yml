@@ -19,8 +19,8 @@ jobs:
       - name: Hitung Jumlah Kontributor
         id: hitung
         run: |
-          JUMLAH=$(grep -c "^- " kontributor.md)
-          echo "JUMLAH=$JUMLAH" >> $GITHUB_ENV
+  JUMLAH=$(grep -cE "^\s*-\s" kontributor.md)
+  echo "JUMLAH=$JUMLAH" >> $GITHUB_ENV
 
       - name: Ganti Placeholder di README
         run: |
