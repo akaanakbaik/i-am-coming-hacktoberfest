@@ -24,10 +24,14 @@ jobs:
 
       - name: Ganti Placeholder di README
         run: |
-          sed -i "s/{{jumlah_kontributor}}/${{ env.JUMLAH }}/g" README.md
+          # Ganti angka sebelumnya dengan jumlah terbaru
+          sed -i -E "s/(Jumlah Kontributor: )[0-9]+/\1${{ env.JUMLAH }}/" README.md
+          # Tambahkan update timestamp supaya commit selalu dianggap berubah
+          echo "" >> README.md
+          echo "<!-- Updated at $(date) -->" >> README.md
 
       - name: Commit dan Push Perubahan
         run: |
           git add README.md
-          git commit -m "🤖 update statistik kontributor (${{ env.JUMLAH }})"
+          git commit -m "🤖 update statistik kontributor (${{ env.JUMLAH }})" || echo "No changes to commit"
           git push
