@@ -2,3 +2,4 @@
 
 - aka - Indonesia 🇮🇩
 - randi - Indonesia 🇮🇩
+- tegar - Indonesia 🇮🇩
